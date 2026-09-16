@@ -1,0 +1,178 @@
+<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#f5efe6"><meta name="apple-mobile-web-app-capable" content="yes"><title>KüchenPlan – Barcode</title><style>
+:root{--bg:#f5efe6;--card:#fffdf9;--ink:#292b27;--muted:#77776e;--g:#708260;--gb:#e5ecdf;--line:#e5ddd1;--y:#a87832;--yb:#f7ecd7;--r:#a6534b;--rb:#f3ddda}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}.app{max-width:760px;margin:auto;padding-bottom:92px}header{padding:28px 20px 10px}.ey{color:var(--g);font-size:12px;font-weight:800;letter-spacing:.8px}.title{font-size:31px;font-weight:800}.sub{margin:3px 0;color:var(--muted)}main{padding:8px 16px}.screen{display:none}.screen.active{display:block}.hero{background:var(--g);color:#fff;border-radius:23px;padding:20px;margin:8px 0 16px}.hero h2{margin:0 0 6px}.hero p{margin:0 0 14px;opacity:.9}.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}.tile,.card{background:var(--card);border:1px solid var(--line);border-radius:19px}.tile{padding:16px;min-height:104px;cursor:pointer}.tile .ic{font-size:24px}.tile b{display:block;margin-top:7px}.tile span,.meta{color:var(--muted);font-size:13px}.head{display:flex;align-items:center;justify-content:space-between;margin:20px 2px 10px}.head h2{margin:0;font-size:21px}.card{padding:16px;margin:11px 0}.toprow{display:flex;justify-content:space-between;gap:10px}.card h3{margin:0 0 5px;font-size:18px}.pill{display:inline-block;padding:5px 9px;border-radius:20px;font-size:12px;font-weight:700}.ok{background:var(--gb);color:#506341}.warn{background:var(--yb);color:#876229}.bad{background:var(--rb);color:#8e443d}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}button{border:0;border-radius:12px;padding:11px 14px;font-weight:750;cursor:pointer}.primary{background:var(--g);color:#fff}.secondary{background:#eee8de;color:var(--ink)}.danger{background:var(--rb);color:#8e443d}.search,input,select{width:100%;padding:13px;border:1px solid var(--line);border-radius:13px;background:#fff;font:inherit}.filters{display:flex;gap:7px;overflow:auto;padding:8px 0}.chip{white-space:nowrap;background:#eee8de;color:#5e6258;padding:8px 12px;border-radius:20px;font-size:13px}.chip.active{background:var(--g);color:#fff}.item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}.item:last-child{border:0}.qty{display:flex;align-items:center;gap:6px}.round{width:34px;height:34px;padding:0;background:#eee8de}.empty{text-align:center;padding:28px 8px;color:var(--muted)}.expiry{background:var(--yb);border-radius:14px;padding:12px;margin:8px 0}.modal{position:fixed;inset:0;background:#0007;display:none;align-items:flex-end;padding:10px;z-index:20}.modal.open{display:flex}.sheet{background:var(--card);width:min(700px,100%);max-height:92vh;overflow:auto;border-radius:24px;padding:20px}.close{float:right;border-radius:50%;width:34px;height:34px;padding:0;background:#eee8de}.field{margin:9px 0}.field label{display:block;color:var(--muted);font-size:13px;margin-bottom:4px}.nav{position:fixed;bottom:0;left:0;right:0;background:#fffdf9ed;backdrop-filter:blur(14px);border-top:1px solid var(--line);z-index:10}.navin{max-width:760px;margin:auto;display:grid;grid-template-columns:repeat(5,1fr)}.nav button{background:none;color:var(--muted);padding:8px 2px 10px;font-size:10px}.nav button.active{color:var(--g)}.nav strong{display:block;font-size:20px;line-height:23px}.toast{position:fixed;bottom:82px;left:50%;transform:translateX(-50%);background:#292b27;color:#fff;padding:11px 15px;border-radius:13px;display:none;z-index:30;font-size:14px}@media(min-width:600px){.grid{grid-template-columns:repeat(4,1fr)}}
+
+.scannerBox{background:#111;border-radius:20px;overflow:hidden;position:relative;aspect-ratio:3/4;max-height:58vh}.scannerBox video{width:100%;height:100%;object-fit:cover;display:block}.scanFrame{position:absolute;inset:25% 9%;border:3px solid white;border-radius:18px;box-shadow:0 0 0 999px #0005;pointer-events:none}.scanHint{position:absolute;left:14px;right:14px;bottom:14px;background:#000b;color:#fff;padding:10px;border-radius:12px;text-align:center;font-size:13px}.productResult{display:flex;gap:12px;align-items:center;margin:14px 0}.productResult img,.productResult .ph{width:76px;height:76px;border-radius:14px;object-fit:cover;background:#eee}.productResult .ph{display:grid;place-items:center;font-size:28px}
+</style><script src="https://unpkg.com/@zxing/browser@0.2.1"></script></head><body><div class="app"><header><div class="ey">DEINE KÜCHE</div><div class="title">KüchenPlan 🍅</div><p class="sub">Was möchtest du heute kochen?</p></header><main>
+<section id="home" class="screen active"><div class="hero"><h2>Heute kochen?</h2><p>Finde schnell ein Rezept, das zu deinem Vorrat passt.</p><button class="primary" onclick="show('cook')">🍳 Rezepte entdecken</button></div><div class="grid"><div class="tile" onclick="show('pantry')"><div class="ic">🧺</div><b>Vorrat</b><span id="hp"></span></div><div class="tile" onclick="show('cook')"><div class="ic">🍝</div><b>Kochen</b><span id="hc"></span></div><div class="tile" onclick="show('shop')"><div class="ic">🛒</div><b>Einkauf</b><span id="hs"></span></div><div class="tile" onclick="show('more')"><div class="ic">📅</div><b>Wochenplan</b><span id="hw"></span></div></div><div class="head"><h2>⚠️ Zuerst aufbrauchen</h2></div><div id="exp"></div><div class="head"><h2>✨ Passt zu deinem Vorrat</h2><button class="link secondary" onclick="show('cook')">Alle</button></div><div id="hr"></div></section>
+<section id="pantry" class="screen"><div class="head"><h2>🧺 Mein Vorrat</h2><div class="actions" style="margin:0"><button class="secondary" onclick="openScanner()">📷 Scannen</button><button class="primary" onclick="edit(-1)">＋ Hinzufügen</button></div></div><input id="ps" class="search" placeholder="Lebensmittel suchen …" oninput="render()"><div id="pl"></div></section>
+<section id="cook" class="screen"><div class="head"><h2>🍳 Rezepte</h2></div><input id="rs" class="search" placeholder="Rezept oder Zutat suchen …" oninput="render()"><div class="filters"><button class="chip active" onclick="rf('all',this)">Alle</button><button class="chip" onclick="rf('full',this)">🟢 Alles da</button><button class="chip" onclick="rf('one',this)">🟡 Wenig fehlt</button><button class="chip" onclick="rf('fav',this)">❤️ Favoriten</button></div><div id="rl"></div></section>
+<section id="shop" class="screen"><div class="head"><h2>🛒 Einkaufsliste</h2><button class="primary" onclick="shopAdd()">＋ Artikel</button></div><div class="card"><div id="sl"></div></div></section>
+<section id="more" class="screen"><div class="head"><h2>📅 Wochenplan</h2></div><div id="week"></div><div class="card"><h3>📦 Produktdatenbank</h3><p class="meta">Scanne einen EAN/GTIN-Barcode. KüchenPlan fragt anschließend Open Food Facts ab und übernimmt Produktname, Marke und Packungsgröße.</p><button class="secondary" onclick="openScanner()">📷 Lebensmittel scannen</button><button class="secondary" onclick="openBarcode()">EAN eingeben</button></div><div class="card"><h3>💾 Deine Daten</h3><p class="meta">Alles wird lokal in deinem Browser gespeichert.</p><div class="actions"><button class="secondary" onclick="backup()">Backup exportieren</button><button class="secondary" onclick="restore()">Backup importieren</button><button class="danger" onclick="resetApp()">Zurücksetzen</button></div></div></section></main></div>
+<div class="nav"><div class="navin"><button data-n="home" onclick="show('home')"><strong>⌂</strong>Heute</button><button data-n="pantry" onclick="show('pantry')"><strong>🧺</strong>Vorrat</button><button data-n="cook" onclick="show('cook')"><strong>🍳</strong>Kochen</button><button data-n="shop" onclick="show('shop')"><strong>🛒</strong>Einkauf</button><button data-n="more" onclick="show('more')"><strong>☰</strong>Mehr</button></div></div><div id="modal" class="modal"><div id="sheet" class="sheet"></div></div><div id="toast" class="toast"></div>
+<script>
+const K='kp_v4_real';const cats=['Grundnahrungsmittel','Gemüse','Obst','Milchprodukte','Konserven','Tiefkühl','Sonstiges'];const days=['Mo','Di','Mi','Do','Fr','Sa','So'];
+const seed=[['Nudeln',500,'g','Grundnahrungsmittel'],['Gestückelte Tomaten',2,'Dose','Konserven'],['Zwiebel',3,'Stück','Gemüse'],['Feta',1,'Packung','Milchprodukte'],['Spinat',300,'g','Gemüse'],['Süßkartoffel',2,'Stück','Gemüse'],['Eier',6,'Stück','Milchprodukte'],['Reis',500,'g','Grundnahrungsmittel'],['Couscous',250,'g','Grundnahrungsmittel']];
+const R=[
+['Nudeln mit Tomatensoße',20,'Pasta',[['Nudeln',150,'g'],['Gestückelte Tomaten',1,'Dose'],['Zwiebel',.5,'Stück']]],['Tomaten-Feta-Pasta',25,'Pasta',[['Nudeln',150,'g'],['Gestückelte Tomaten',1,'Dose'],['Feta',.5,'Packung']]],['Süßkartoffel-Feta-Bowl',30,'Bowl',[['Süßkartoffel',1,'Stück'],['Feta',.5,'Packung'],['Spinat',100,'g']]],['Spinat-Omelett',15,'Schnell',[['Eier',2,'Stück'],['Spinat',80,'g'],['Feta',.25,'Packung']]],['Gemüse-Reis-Pfanne',25,'Reis',[['Reis',150,'g'],['Zwiebel',.5,'Stück'],['Spinat',80,'g']]],['Couscous-Feta-Bowl',15,'Bowl',[['Couscous',100,'g'],['Feta',.5,'Packung'],['Spinat',60,'g']]],['Tomaten-Reis',25,'Reis',[['Reis',150,'g'],['Gestückelte Tomaten',1,'Dose'],['Zwiebel',.5,'Stück']]],['Feta-Rührei',10,'Schnell',[['Eier',3,'Stück'],['Feta',.25,'Packung']]],['Süßkartoffel aus dem Ofen',35,'Ofen',[['Süßkartoffel',1,'Stück'],['Feta',.25,'Packung']]],['Spinat-Couscous',15,'Schnell',[['Couscous',100,'g'],['Spinat',100,'g'],['Zwiebel',.5,'Stück']]],['Reis mit Spiegelei',20,'Schnell',[['Reis',150,'g'],['Eier',2,'Stück']]],['Cremige Tomaten-Pasta',25,'Pasta',[['Nudeln',150,'g'],['Gestückelte Tomaten',1,'Dose'],['Feta',.5,'Packung']]]];
+let d=JSON.parse(localStorage.getItem(K)||'null')||{p:seed.map(x=>({name:x[0],qty:x[1],unit:x[2],cat:x[3],exp:''})),s:[],f:[],w:{}};let filter='all';let fav=new Set(d.f);
+function save(){d.f=[...fav];localStorage.setItem(K,JSON.stringify(d));render()}function esc(x){return String(x).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}function st(n){return d.p.find(x=>x.name.toLowerCase()===n.toLowerCase())}function state(r){let miss=r[3].filter(i=>{let x=st(i[0]);return !x||x.qty<i[1]}).map(i=>i[0]);return miss}function q(n){return Number.isInteger(n)?n:n.toFixed(2).replace(/0+$/,'').replace(/\.$/,'')}
+function show(id){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.n===id));render();scrollTo(0,0)}
+function rf(f,b){filter=f;document.querySelectorAll('#cook .chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');render()}
+function card(r){let m=state(r),i=R.indexOf(r),good=!m.length;let badge=good?'<span class="pill ok">🟢 Alles da</span>':m.length===1?'<span class="pill warn">🟡 1 fehlt</span>':'<span class="pill bad">🔴 '+m.length+' fehlen</span>';return `<div class="card"><div class="toprow"><div><h3>${esc(r[0])}</h3><div class="meta">⏱️ ${r[1]} Min · ${r[2]}</div></div><div onclick="favIt(${i})" style="font-size:23px;cursor:pointer">${fav.has(i)?'❤️':'♡'}</div></div><div style="margin-top:9px">${badge}</div>${m.length?'<div class="meta" style="margin-top:8px">Fehlt: '+m.map(esc).join(', ')+'</div>':''}<div class="actions"><button class="primary" onclick="recipe(${i})">Rezept</button>${good?'<button class="secondary" onclick="cook('+i+')">🍳 Kochen</button>':'<button class="secondary" onclick="missing('+i+')">＋ Einkaufen</button>'}</div></div>`}
+function render(){document.getElementById('hp').textContent=d.p.length+' Lebensmittel';document.getElementById('hc').textContent=R.filter(x=>!state(x).length).length+' komplett passend';document.getElementById('hs').textContent=d.s.length+' Artikel';document.getElementById('hw').textContent=Object.keys(d.w).length+' geplant';let ex=d.p.filter(x=>x.exp&&Math.ceil((new Date(x.exp+'T23:59:59')-Date.now())/864e5)<=3);document.getElementById('exp').innerHTML=ex.length?ex.slice(0,3).map(x=>`<div class="expiry">⚠️ <b>${esc(x.name)}</b> · ${esc(x.exp)}</div>`).join(''):'<div class="card meta">Nichts Dringendes – alles im grünen Bereich. ✨</div>';document.getElementById('hr').innerHTML=[...R].sort((a,b)=>state(a).length-state(b).length).slice(0,3).map(card).join('');let pq=(document.getElementById('ps')?.value||'').toLowerCase();document.getElementById('pl').innerHTML=d.p.filter(x=>x.name.toLowerCase().includes(pq)).map((x,i)=>`<div class="card"><div class="item"><div><b>${esc(x.name)}</b><div class="meta">${esc(x.cat)}${x.exp?' · haltbar bis '+esc(x.exp):''}</div></div><div class="qty"><button class="round" onclick="chg(${i},-1)">−</button><b>${q(x.qty)} ${esc(x.unit)}</b><button class="round" onclick="chg(${i},1)">+</button></div></div><div class="actions"><button class="secondary" onclick="edit(${i})">Bearbeiten</button><button class="danger" onclick="del(${i})">Löschen</button></div></div>`).join('')||'<div class="empty">Noch nichts im Vorrat.</div>';let rq=(document.getElementById('rs')?.value||'').toLowerCase();let rr=R.filter((r,i)=>(!rq||(r[0]+' '+r[2]+' '+r[3].map(x=>x[0]).join(' ')).toLowerCase().includes(rq))&&(filter==='all'||filter==='full'&&!state(r).length||filter==='one'&&state(r).length===1||filter==='fav'&&fav.has(i)));document.getElementById('rl').innerHTML=rr.length?rr.map(card).join(''):'<div class="empty">Keine passenden Rezepte.</div>';document.getElementById('sl').innerHTML=d.s.length?d.s.map((x,i)=>`<div class="item"><span>☐ ${esc(x)}</span><div class="actions" style="margin:0"><button class="secondary" onclick="buy(${i})">Gekauft</button><button class="danger" onclick="d.s.splice(${i},1);save()">×</button></div></div>`).join(''):'<div class="empty">Deine Einkaufsliste ist leer 🎉</div>';document.getElementById('week').innerHTML=days.map(day=>`<div class="card"><div class="item"><div><b>${day}</b><div class="meta">${d.w[day]?esc(R[d.w[day]][0]):'Noch nichts geplant'}</div></div><button class="secondary" onclick="plan('${day}')">${d.w[day]!=null?'Ändern':'＋ Rezept'}</button></div></div>`).join('')}
+function edit(i,barcode=""){let x=i<0?{name:'',qty:'',unit:'g',cat:cats[0],exp:''}:d.p[i];document.getElementById('sheet').innerHTML=`<button class="close" onclick="closeM()">×</button><h2>${i<0?'Lebensmittel hinzufügen':'Lebensmittel bearbeiten'}</h2><div class="field"><label>Name</label><input id="n" value="${esc(x.name)}" placeholder="z. B. Reis"></div><div class="field"><label>Menge</label><input id="q" type="number" step="0.1" value="${x.qty}"></div><div class="field"><label>Einheit</label><select id="u">${['g','kg','ml','l','Stück','Dose','Packung'].map(v=>`<option ${v===x.unit?'selected':''}>${v}</option>`).join('')}</select></div><div class="field"><label>Kategorie</label><select id="c">${cats.map(v=>`<option ${v===x.cat?'selected':''}>${v}</option>`).join('')}</select></div><div class="field"><label>Haltbar bis</label><input id="e" type="date" value="${x.exp||''}"></div>${barcode?`<div class="field"><label>Barcode</label><input id="bc" inputmode="numeric" value="${esc(barcode)}"></div>`:""}<div class="actions"><button class="primary" onclick="saveEdit(${i})">Speichern</button><button class="secondary" onclick="closeM()">Abbrechen</button></div>`;openM()}
+function saveEdit(i){let n=document.getElementById('n').value.trim(),qty=parseFloat(document.getElementById('q').value);if(!n||isNaN(qty))return alert('Bitte Name und Menge eingeben.');let bc=document.getElementById('bc')?.value?.replace(/\D/g,'')||null;let x={name:n,qty,unit:document.getElementById('u').value,cat:document.getElementById('c').value,exp:document.getElementById('e').value,barcode:bc,brand:(i>=0?d.p[i].brand||'':'')};if(i<0)d.p.push(x);else d.p[i]=x;if(bc){cacheProduct({code:bc,name:n,brand:x.brand,pack:qty+' '+x.unit,image:'',nutri:'—'})}d.s=d.s.filter(v=>v.toLowerCase()!==n.toLowerCase());save();closeM();toast('Vorrat gespeichert. Barcode gespeichert.')}
+function chg(i,n){d.p[i].qty=Math.max(0,d.p[i].qty+n);if(d.p[i].qty===0&&!d.s.includes(d.p[i].name))d.s.push(d.p[i].name);save()}function del(i){if(confirm('Lebensmittel löschen?')){d.p.splice(i,1);save()}}function favIt(i){fav.has(i)?fav.delete(i):fav.add(i);save()}
+function recipe(i){let r=R[i],m=state(r);document.getElementById('sheet').innerHTML=`<button class="close" onclick="closeM()">×</button><h2>${esc(r[0])}</h2><p class="meta">⏱️ ${r[1]} Minuten · ${r[2]}</p><h3>Zutaten</h3><ul>${r[3].map(x=>`<li>${q(x[1])} ${x[2]} ${esc(x[0])}</li>`).join('')}</ul><h3>Zubereitung</h3><ol><li>Alle Zutaten vorbereiten.</li><li>Zutaten nach Rezept zusammen zubereiten und würzen.</li><li>Anrichten und genießen.</li></ol><div class="actions">${m.length?`<button class="secondary" onclick="missing(${i});closeM()">＋ ${m.length} fehlende Zutaten einkaufen</button>`:`<button class="primary" onclick="cook(${i});closeM()">🍳 Ich koche das</button>`}<button class="secondary" onclick="closeM()">Schließen</button></div>`;openM()}
+function cook(i){let m=state(R[i]);if(m.length)return toast('Es fehlen noch Zutaten.');R[i][3].forEach(z=>{let x=st(z[0]);x.qty=Math.max(0,+(x.qty-z[1]).toFixed(2));if(!x.qty&&!d.s.includes(x.name))d.s.push(x.name)});save();toast('Guten Appetit! Vorrat wurde aktualisiert.');show('home')}
+function missing(i){state(R[i]).forEach(n=>{if(!d.s.includes(n))d.s.push(n)});save();toast('Fehlendes steht auf der Einkaufsliste.');show('shop')}function shopAdd(){document.getElementById('sheet').innerHTML=`<button class="close" onclick="closeM()">×</button><h2>Artikel hinzufügen</h2><input id="sn" placeholder="z. B. Milch"><div class="actions"><button class="primary" onclick="addS()">Hinzufügen</button></div>`;openM()}function addS(){let n=document.getElementById('sn').value.trim();if(n&&!d.s.includes(n))d.s.push(n);save();closeM()}function buy(i){let n=d.s[i],x=st(n);if(x)x.qty+=1;else d.p.push({name:n,qty:1,unit:'Stück',cat:'Sonstiges',exp:''});d.s.splice(i,1);save();toast('Zum Vorrat hinzugefügt.')}
+function plan(day){document.getElementById('sheet').innerHTML=`<button class="close" onclick="closeM()">×</button><h2>${day} planen</h2><select id="wr"><option value="">— leer —</option>${R.map((r,i)=>`<option value="${i}" ${d.w[day]===i?'selected':''}>${esc(r[0])}</option>`).join('')}</select><div class="actions"><button class="primary" onclick="savePlan('${day}')">Speichern</button></div>`;openM()}function savePlan(day){let v=document.getElementById('wr').value;if(v==='')delete d.w[day];else d.w[day]=+v;save();closeM()}
+let scanControls=null, scanReader=null;
+
+async function openScanner(){
+  document.getElementById('sheet').innerHTML=`<button class="close" onclick="closeScanner()">×</button><h2>📷 Lebensmittel scannen</h2>
+  <p class="meta">Halte den EAN-/GTIN-Barcode in den weißen Rahmen. Die Produktdaten werden danach automatisch gesucht.</p>
+  <div class="scannerBox"><video id="scanVideo" playsinline muted></video><div class="scanFrame"></div><div class="scanHint">Rückkamera · gute Beleuchtung hilft</div></div>
+  <p id="scanStatus" class="meta">Kamera wird gestartet …</p>
+  <div class="actions"><button class="secondary" onclick="closeScanner()">Abbrechen</button><button class="secondary" onclick="openBarcode()">EAN eingeben</button></div>`;
+  openM();
+  try{
+    if(!window.ZXingBrowser) throw new Error('ZXing fehlt');
+    scanReader=new ZXingBrowser.BrowserMultiFormatReader();
+    const video=document.getElementById('scanVideo');
+    scanControls=await scanReader.decodeFromConstraints(
+      {video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}},audio:false},
+      video,
+      async (result)=>{
+        if(result){
+          const code=result.getText();
+          document.getElementById('scanStatus').textContent='Barcode erkannt: '+code;
+          try{scanControls?.stop()}catch(e){}
+          await lookupProduct(code);
+        }
+      }
+    );
+  }catch(e){
+    const s=document.getElementById('scanStatus');
+    if(s)s.innerHTML='Kamera konnte nicht gestartet werden. Erlaube Safari den Kamerazugriff und öffne KüchenPlan über HTTPS.';
+  }
+}
+
+function closeScanner(){try{scanControls?.stop()}catch(e){}scanControls=null;closeM()}
+
+
+function getBarcodeCache(){
+  try{return JSON.parse(localStorage.getItem('kuechenplan_product_cache')||'{}')}catch(e){return {}}
+}
+function saveBarcodeCache(cache){
+  try{localStorage.setItem('kuechenplan_product_cache',JSON.stringify(cache))}catch(e){}
+}
+function cacheProduct(info){
+  if(!info||!info.code)return;
+  const cache=getBarcodeCache();
+  cache[String(info.code)]={name:info.name||'',brand:info.brand||'',pack:info.pack||'',image:info.image||'',nutri:info.nutri||'—'};
+  saveBarcodeCache(cache);
+}
+function getLocalProduct(code){
+  const cache=getBarcodeCache();
+  return cache[String(code)]||null;
+}
+function findPantryByBarcode(code){
+  return d.p.find(x=>String(x.barcode||'')===String(code))||null;
+}
+
+async function lookupProduct(code){
+  code=String(code||'').replace(/\D/g,'');
+  if(!code){toast('Bitte einen gültigen Barcode eingeben.');return}
+
+  // First check the products saved locally. This also works when Open Food Facts
+  // does not know the product anymore or there is no internet connection.
+  const local=getLocalProduct(code);
+  if(local){
+    showProduct(local,code,true);
+    return;
+  }
+
+  const pantryItem=findPantryByBarcode(code);
+  if(pantryItem){
+    showProduct({
+      name:pantryItem.name,
+      brand:pantryItem.brand||'',
+      pack:(pantryItem.qty||1)+' '+(pantryItem.unit||'Stück'),
+      image:'',
+      nutri:'—'
+    },code,true);
+    return;
+  }
+
+  document.getElementById('sheet').innerHTML=`<button class="close" onclick="closeM()">×</button><h2>🔎 Produkt wird gesucht …</h2><p class="meta">EAN ${esc(code)}</p><div class="empty">Open Food Facts wird abgefragt.</div>`;
+  try{
+    const url=`https://world.openfoodfacts.org/api/v3/product/${encodeURIComponent(code)}.json?fields=code,product_name,product_name_de,brands,quantity,image_front_small_url,nutriscore_grade`;
+    const res=await fetch(url,{headers:{Accept:'application/json'}});
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    if(data.status!==1||!data.product){
+      document.getElementById('sheet').innerHTML=`<button class="close" onclick="closeM()">×</button><h2>Produkt nicht gefunden</h2><p class="meta">EAN <b>${esc(code)}</b> ist aktuell nicht in der Datenbank hinterlegt.</p><p>Lege es einmal manuell an. Der Barcode wird dabei lokal gespeichert. Beim nächsten Scan auf demselben Gerät wird das Produkt direkt erkannt.</p><div class="actions"><button class="primary" onclick="editWithBarcode('${esc(code)}')">Manuell hinzufügen</button><button class="secondary" onclick="openScanner()">Erneut scannen</button></div>`;
+      return;
+    }
+    const p=data.product;
+    const info={
+      name:p.product_name_de||p.product_name||p.brands||'Unbekanntes Lebensmittel',
+      brand:p.brands||'',
+      pack:p.quantity||'',
+      image:p.image_front_small_url||'',
+      nutri:p.nutriscore_grade?String(p.nutriscore_grade).toUpperCase():'—'
+    };
+    cacheProduct({code,...info});
+    showProduct(info,code,false);
+  }catch(e){
+    document.getElementById('sheet').innerHTML=`<button class="close" onclick="closeM()">×</button><h2>⚠️ Datenbank nicht erreichbar</h2><p class="meta">Keine Internetverbindung oder Open Food Facts gerade nicht erreichbar.</p><p>Wenn du den Barcode schon einmal gespeichert hast, wird er beim nächsten Versuch automatisch aus deinem lokalen Produktarchiv erkannt.</p><div class="actions"><button class="primary" onclick="lookupProduct('${esc(code)}')">Erneut versuchen</button><button class="secondary" onclick="editWithBarcode('${esc(code)}')">Manuell hinzufügen</button></div>`;
+  }
+}
+
+function showProduct(prod,code,local=false){
+  const name=prod.name||prod.product_name_de||prod.product_name||prod.brands||'Unbekanntes Lebensmittel';
+  const brand=prod.brand||prod.brands||'';
+  const pack=prod.pack||prod.quantity||'';
+  const img=prod.image||prod.image_front_small_url||'';
+  const nutri=prod.nutri||prod.nutriscore_grade?(String(prod.nutri||prod.nutriscore_grade).toUpperCase()):'—';
+  const existing=findPantryByBarcode(code);
+  document.getElementById('sheet').innerHTML=`<button class="close" onclick="closeM()">×</button><h2>${local?'Produkt erkannt 🎉':'Produkt gefunden 🎉'}</h2>
+  <div class="productResult">${img?`<img src="${esc(img)}" alt="">`:`<div class="ph">🍎</div>`}<div><b>${esc(name)}</b><div class="meta">${esc(brand)}${pack?' · '+esc(pack):''}</div><div class="meta">EAN ${esc(code)} · Nutri-Score ${esc(nutri)}</div></div></div>
+  ${local?'<p class="meta">Dieses Produkt wurde auf deinem Gerät bereits gespeichert und kann auch ohne erneute Datenbanksuche erkannt werden.</p>':'<p class="meta">Die Produktdaten wurden gespeichert, damit der Barcode auf diesem Gerät später wiedererkannt werden kann.</p>'}
+  <div class="actions">${existing?`<button class="primary" onclick="addScanned(${JSON.stringify({name,brand,pack,code})})">＋ Noch einmal in Vorrat</button>`:`<button class="primary" onclick="addScanned(${JSON.stringify({name,brand,pack,code})})">＋ In Vorrat übernehmen</button>`}<button class="secondary" onclick="openScanner()">Noch eins scannen</button></div>`;
+}
+
+function parsePack(qty){
+  const s=String(qty||'').replace(',','.');
+  const m=s.match(/(\d+(?:\.\d+)?)\s*(kg|g|ml|l|cl|stk|stück)?/i);
+  if(!m)return {qty:1,unit:'Packung'};
+  let n=parseFloat(m[1]),u=(m[2]||'Packung').toLowerCase();
+  if(u==='kg')return {qty:n,unit:'kg'}; if(u==='g')return {qty:n,unit:'g'}; if(u==='ml')return {qty:n,unit:'ml'}; if(u==='l')return {qty:n,unit:'l'}; if(u==='cl')return {qty:n/100,unit:'l'}; if(u==='stk'||u==='stück')return {qty:n,unit:'Stück'};
+  return {qty:n,unit:'Packung'};
+}
+
+function addScanned(info){
+  cacheProduct(info);
+  const q=parsePack(info.pack),existing=findPantryByBarcode(info.code)||st(info.name);
+  if(existing){
+    existing.qty=+(existing.qty+q.qty).toFixed(2);
+    existing.unit=q.unit;
+    existing.barcode=info.code;
+    existing.brand=info.brand||existing.brand||'';
+  }else{
+    d.p.push({name:info.name,qty:q.qty,unit:q.unit,cat:'Sonstiges',exp:'',barcode:info.code,brand:info.brand||''});
+  }
+  d.s=d.s.filter(x=>x.toLowerCase()!==info.name.toLowerCase());
+  save();closeM();toast(info.name+' wurde hinzugefügt.');show('pantry');
+}
+
+function editWithBarcode(code){closeM();setTimeout(()=>edit(-1,code),50)}
+
+function openBarcode(){
+  document.getElementById('sheet').innerHTML=`<button class="close" onclick="closeM()">×</button><h2>EAN/GTIN eingeben</h2><p class="meta">Wenn der Kamerascanner nicht funktioniert, kannst du die Barcode-Nummer hier eingeben.</p><div class="field"><label>Barcode</label><input id="manualBarcode" inputmode="numeric" autocomplete="off" placeholder="z. B. 3017624010701"></div><div class="actions"><button class="primary" onclick="lookupProduct(document.getElementById('manualBarcode').value)">Produkt suchen</button><button class="secondary" onclick="openScanner()">📷 Scanner</button></div>`;
+  openM();
+}
+
+function backup(){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(d)],{type:'application/json'}));a.download='kuechenplan-backup.json';a.click()}function restore(){let i=document.createElement('input');i.type='file';i.accept='.json';i.onchange=()=>{let f=i.files[0],r=new FileReader();r.onload=()=>{try{d=JSON.parse(r.result);fav=new Set(d.f||[]);save();toast('Backup importiert.')}catch(e){alert('Backup ungültig.')}};r.readAsText(f)};i.click()}function resetApp(){if(confirm('Alle KüchenPlan-Daten löschen?')){localStorage.removeItem(K);location.reload()}}function openM(){document.getElementById('modal').classList.add('open')}function closeM(){document.getElementById('modal').classList.remove('open')}function toast(t){let x=document.getElementById('toast');x.textContent=t;x.style.display='block';setTimeout(()=>x.style.display='none',2200)}render();show('home');
+</script></body></html>
