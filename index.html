@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f7f3ed"><title>KüchenPlan</title>
+<style>
+:root{--bg:#f7f3ed;--card:#fffdf9;--text:#2f312d;--muted:#77786f;--green:#6d805f;--line:#e6dfd5;--red:#b95f55;--gold:#b18443}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}.app{max-width:760px;margin:auto;min-height:100vh;padding-bottom:88px}.top{padding:28px 20px 12px}.top h1{margin:0;font-size:30px}.top p{margin:4px 0;color:var(--muted)}main{padding:0 16px}.screen{display:none}.screen.active{display:block}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.tile,.card{background:var(--card);border:1px solid var(--line);border-radius:20px}.tile{padding:17px;cursor:pointer}.tile b{display:block;font-size:16px}.tile span{color:var(--muted);font-size:13px}.card{padding:16px;margin:12px 0;box-shadow:0 4px 18px #3d34250b}h2{font-size:21px;margin:20px 2px 10px}h3{margin:0 0 7px}.muted{color:var(--muted)}.pill{display:inline-block;padding:5px 9px;border-radius:20px;background:#eee9e0;color:#5e6258;font-size:12px}.ok{color:#557046}.warn{color:var(--gold)}.bad{color:var(--red)}button{border:0;border-radius:13px;padding:11px 14px;font-weight:700;background:var(--green);color:white;cursor:pointer}button.secondary{background:#eee9e0;color:var(--text)}button.danger{background:#f1ddd9;color:#8f443b}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}.item:last-child{border-bottom:0}.qty{display:flex;align-items:center;gap:7px}.qty button{width:34px;height:34px;padding:0;border-radius:10px}.empty{text-align:center;padding:28px;color:var(--muted)}.recipe-head{display:flex;justify-content:space-between;gap:12px}.missing{margin-top:9px;color:var(--gold);font-size:14px}.full{margin-top:9px;color:#557046;font-size:14px}.modal{position:fixed;inset:0;background:#0007;display:none;align-items:flex-end;justify-content:center;padding:12px;z-index:5}.modal.open{display:flex}.sheet{width:min(700px,100%);max-height:90vh;overflow:auto;background:var(--card);border-radius:24px;padding:20px}.sheet input,.sheet select{width:100%;padding:13px;border:1px solid var(--line);border-radius:12px;background:white;margin:6px 0 12px;font-size:16px}.nav{position:fixed;bottom:0;left:0;right:0;background:#fffdf9ee;backdrop-filter:blur(12px);border-top:1px solid var(--line);display:flex;justify-content:center;z-index:4}.navin{width:min(760px,100%);display:grid;grid-template-columns:repeat(5,1fr)}.nav button{background:none;color:var(--muted);padding:12px 3px;border-radius:0;font-size:11px}.nav button.active{color:var(--green)}.nav strong{display:block;font-size:20px;margin-bottom:2px}
+</style></head>
+<body><div class="app">
+<header class="top"><h1>🍅 KüchenPlan</h1><p id="greeting">Deine Küche, dein Überblick.</p></header>
+<main>
+<section id="home" class="screen active"><div class="grid">
+<div class="tile" onclick="show('pantry')"><b>🧺 Vorrat</b><span id="countPantry">0 Lebensmittel</span></div>
+<div class="tile" onclick="show('cook')"><b>🍳 Kochen</b><span id="countCook">0 passende Rezepte</span></div>
+<div class="tile" onclick="show('shop')"><b>🛒 Einkauf</b><span id="countShop">0 Artikel</span></div>
+<div class="tile" onclick="expiring()"><b>⚠️ Bald aufbrauchen</b><span id="countExpire">0 Lebensmittel</span></div>
+</div><h2>Heute kochen</h2><div id="homeRecipes"></div></section>
+
+<section id="pantry" class="screen"><h2>🧺 Mein Vorrat</h2><button onclick="openAdd()">＋ Lebensmittel hinzufügen</button><div id="pantryList"></div></section>
+
+<section id="cook" class="screen"><h2>🍳 Was kann ich kochen?</h2><p class="muted">Rezepte werden nach deinen vorhandenen Zutaten sortiert.</p><div id="recipes"></div></section>
+
+<section id="shop" class="screen"><h2>🛒 Einkaufsliste</h2><div class="card"><p class="muted">Leere oder fehlende Zutaten kannst du hier sammeln.</p><div id="shopList"></div><div class="actions"><button onclick="openShop()">＋ Artikel</button><button class="secondary" onclick="clearShop()">Liste leeren</button></div></div></section>
+
+<section id="more" class="screen"><h2>⚙️ Mehr</h2><div class="card"><h3>Einstellungen</h3><p class="muted">Deine Daten werden lokal in diesem Browser gespeichert.</p><button class="danger" onclick="resetApp()">Alle Daten zurücksetzen</button></div><div class="card"><h3>💡 So funktioniert KüchenPlan</h3><p>Vorrat eintragen → Rezept auswählen → „Ich koche das“ → Zutaten werden automatisch abgezogen → Fehlendes landet auf deiner Einkaufsliste.</p></div></section>
+</main></div>
+
+<div class="nav"><div class="navin">
+<button onclick="show('home')" data-nav="home"><strong>⌂</strong>Heute</button>
+<button onclick="show('pantry')" data-nav="pantry"><strong>🧺</strong>Vorrat</button>
+<button onclick="show('cook')" data-nav="cook"><strong>🍳</strong>Kochen</button>
+<button onclick="show('shop')" data-nav="shop"><strong>🛒</strong>Einkauf</button>
+<button onclick="show('more')" data-nav="more"><strong>☰</strong>Mehr</button>
+</div></div>
+
+<div id="modal" class="modal"><div class="sheet" id="sheet"></div></div>
+<script>
+const seed=[["Nudeln",500,"g","Grundnahrungsmittel",null],["Gestückelte Tomaten",2,"Dose","Konserven",null],["Zwiebel",3,"Stück","Gemüse",null],["Feta",1,"Packung","Milchprodukte",null],["Spinat",300,"g","Gemüse",new Date(Date.now()+2*864e5).toISOString().slice(0,10)],["Süßkartoffel",2,"Stück","Gemüse",null],["Eier",6,"Stück","Milchprodukte",new Date(Date.now()+6*864e5).toISOString().slice(0,10)],["Avocado",1,"Stück","Obst",null]];
+const recipes=[
+{name:"Nudeln mit Tomatensoße",time:"20 Min",ingredients:[["Nudeln",150,"g"],["Gestückelte Tomaten",1,"Dose"],["Zwiebel",0.5,"Stück"]],steps:["Zwiebel anbraten.","Tomaten dazugeben und würzen.","Nudeln kochen und mit der Sauce servieren."]},
+{name:"Süßkartoffel-Feta-Bowl",time:"30 Min",ingredients:[["Süßkartoffel",1,"Stück"],["Feta",0.5,"Packung"],["Spinat",100,"g"]],steps:["Süßkartoffel garen.","Spinat kurz anbraten.","Alles mit Feta in einer Bowl anrichten."]},
+{name:"Spinat-Omelett",time:"15 Min",ingredients:[["Eier",2,"Stück"],["Spinat",80,"g"],["Feta",0.25,"Packung"]],steps:["Eier verquirlen.","Spinat anbraten.","Ei dazugeben und Feta darüberbröseln."]},
+{name:"Tomaten-Feta-Pasta",time:"25 Min",ingredients:[["Nudeln",150,"g"],["Gestückelte Tomaten",1,"Dose"],["Feta",0.5,"Packung"]],steps:["Nudeln kochen.","Tomaten erwärmen.","Feta unterheben und mit Nudeln mischen."]}
+];
+let pantry=JSON.parse(localStorage.getItem("kp_pantry")||"null")||seed.map(x=>({name:x[0],qty:x[1],unit:x[2],cat:x[3],exp:x[4]}));
+let shop=JSON.parse(localStorage.getItem("kp_shop")||"[]");
+function save(){localStorage.setItem("kp_pantry",JSON.stringify(pantry));localStorage.setItem("kp_shop",JSON.stringify(shop));render()}
+function norm(s){return s.toLowerCase().trim()}
+function stock(name){return pantry.find(x=>norm(x.name)===norm(name))}
+function status(r){let missing=[],have=0;r.ingredients.forEach(i=>{let s=stock(i[0]);if(s&&s.qty>=i[1])have++;else missing.push(i[0])});return {missing,have}}
+function render(){
+document.getElementById("countPantry").textContent=pantry.length+" Lebensmittel";
+document.getElementById("countShop").textContent=shop.length+" Artikel";
+document.getElementById("countExpire").textContent=pantry.filter(x=>x.exp&&new Date(x.exp)<=new Date(Date.now()+3*864e5)).length+" Lebensmittel";
+document.getElementById("countCook").textContent=recipes.filter(r=>status(r).missing.length===0).length+" passende Rezepte";
+document.getElementById("pantryList").innerHTML=pantry.length?pantry.map((x,i)=>`<div class="card"><div class="item"><div><b>${esc(x.name)}</b><div class="muted">${x.cat} ${x.exp?`· haltbar bis ${new Date(x.exp).toLocaleDateString("de-DE")}`:""}</div></div><div class="qty"><button onclick="changeQty(${i},-1)">−</button><b>${x.qty} ${x.unit}</b><button onclick="changeQty(${i},1)">+</button></div></div></div>`).join(""):`<div class="empty">Dein Vorrat ist noch leer.</div>`;
+document.getElementById("recipes").innerHTML=recipeHTML(false);
+document.getElementById("homeRecipes").innerHTML=recipeHTML(true);
+document.getElementById("shopList").innerHTML=shop.length?shop.map((x,i)=>`<div class="item"><span>☐ ${esc(x)}</span><button class="secondary" onclick="buy(${i})">Gekauft</button></div>`).join(""):`<div class="empty">Deine Einkaufsliste ist leer 🎉</div>`;
+}
+function recipeHTML(short){
+let arr=[...recipes].sort((a,b)=>status(a).missing.length-status(b).missing.length);
+if(short)arr=arr.slice(0,3);
+return arr.map((r,idx)=>{let s=status(r);return `<div class="card"><div class="recipe-head"><div><h3>${r.name}</h3><span class="pill">⏱️ ${r.time}</span></div><span>${s.missing.length?"🟡":"🟢"}</span></div><div class="${s.missing.length?"missing":"full"}">${s.missing.length?`Fehlt: ${s.missing.join(", ")}`:"Alle Zutaten vorhanden ✓"}</div><div class="actions"><button onclick="openRecipe(${recipes.indexOf(r)})">Rezept ansehen</button>${!s.missing.length?`<button class="secondary" onclick="cook(${recipes.indexOf(r)})">🍳 Ich koche das</button>`:""}</div></div>`}).join("");
+}
+function openRecipe(i){let r=recipes[i];let s=status(r);document.getElementById("sheet").innerHTML=`<h2>${r.name}</h2><p class="muted">⏱️ ${r.time}</p><h3>Zutaten</h3><ul>${r.ingredients.map(i=>`<li>${i[1]} ${i[2]} ${i[0]}</li>`).join("")}</ul><h3>Zubereitung</h3><ol>${r.steps.map(x=>`<li>${x}</li>`).join("")}</ol>${s.missing.length?`<p class="missing">Es fehlen: ${s.missing.join(", ")}</p>`:`<button onclick="cook(${i});closeModal()">🍳 Ich koche das</button>`}<button class="secondary" style="margin-left:7px" onclick="closeModal()">Schließen</button>`;openModal()}
+function cook(i){let r=recipes[i];r.ingredients.forEach(ing=>{let s=stock(ing[0]);if(s){s.qty=Math.max(0,+(s.qty-ing[1]).toFixed(2));if(s.qty===0&&!shop.includes(s.name))shop.push(s.name)}});save();alert("Guten Appetit! Die Zutaten wurden aus deinem Vorrat abgezogen.");show("pantry")}
+function changeQty(i,d){pantry[i].qty=Math.max(0,+(pantry[i].qty+d).toFixed(2));if(pantry[i].qty===0&&!shop.includes(pantry[i].name))shop.push(pantry[i].name);save()}
+function openAdd(){document.getElementById("sheet").innerHTML=`<h2>Lebensmittel hinzufügen</h2><input id="an" placeholder="z. B. Reis"><input id="aq" type="number" step="0.1" placeholder="Menge"><select id="au"><option>g</option><option>kg</option><option>ml</option><option>l</option><option>Stück</option><option>Dose</option><option>Packung</option></select><select id="ac"><option>Grundnahrungsmittel</option><option>Gemüse</option><option>Obst</option><option>Milchprodukte</option><option>Fleisch/Fisch</option><option>Konserven</option><option>Tiefkühl</option><option>Sonstiges</option></select><label>Haltbar bis (optional)</label><input id="ae" type="date"><button onclick="addPantry()">Hinzufügen</button> <button class="secondary" onclick="closeModal()">Abbrechen</button>`;openModal()}
+function addPantry(){let n=document.getElementById("an").value.trim(),q=parseFloat(document.getElementById("aq").value),u=document.getElementById("au").value,c=document.getElementById("ac").value,e=document.getElementById("ae").value;if(!n||!q)return alert("Bitte Lebensmittel und Menge eingeben.");let s=stock(n);if(s)s.qty=+(s.qty+q).toFixed(2);else pantry.push({name:n,qty:q,unit:u,cat:c,exp:e||null});shop=shop.filter(x=>norm(x)!==norm(n));save();closeModal()}
+function openShop(){document.getElementById("sheet").innerHTML=`<h2>Artikel hinzufügen</h2><input id="sn" placeholder="z. B. Milch"><button onclick="addShop()">Hinzufügen</button> <button class="secondary" onclick="closeModal()">Abbrechen</button>`;openModal()}
+function addShop(){let n=document.getElementById("sn").value.trim();if(n){if(!shop.includes(n))shop.push(n);save();closeModal()}}
+function buy(i){let n=shop[i];shop.splice(i,1);let s=stock(n);if(s){s.qty+=1}else pantry.push({name:n,qty:1,unit:"Stück",cat:"Sonstiges",exp:null});save()}
+function clearShop(){shop=[];save()}
+function expiring(){let a=pantry.filter(x=>x.exp&&new Date(x.exp)<=new Date(Date.now()+3*864e5));alert(a.length?a.map(x=>`${x.name}: ${new Date(x.exp).toLocaleDateString("de-DE")}`).join("\\n"):"In den nächsten 3 Tagen läuft nichts ab.");}
+function show(id){document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll(".nav button").forEach(x=>x.classList.toggle("active",x.dataset.nav===id));window.scrollTo(0,0)}
+function openModal(){document.getElementById("modal").classList.add("open")}function closeModal(){document.getElementById("modal").classList.remove("open")}
+function resetApp(){if(confirm("Wirklich alle Daten löschen?")){localStorage.clear();location.reload()}}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+document.getElementById("greeting").textContent="Deine Küche, dein Überblick.";
+render();
+</script></body></html>
